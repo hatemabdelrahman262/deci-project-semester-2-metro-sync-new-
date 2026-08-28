@@ -102,7 +102,7 @@ announcementForm.addEventListener("submit", async (e) => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text,station:appState.currentStationId }),
       }
     );
 

@@ -4,7 +4,7 @@ import Station from "../models/Station.js";
 import jwt from "jsonwebtoken"
 import bcrypt  from "bcrypt"
 import Announcement from "../models/Announcement.js";
-import { Socket } from "socket.io";
+import { createAnnouncementController } from "../controllers/announcementController.js";
 // Create router for station routes
 const router = express.Router();
 
@@ -16,20 +16,13 @@ router.get("/api/v1/stations",async (req,res)=>{
     console.log("stations")
     return res.status(200).json(stations)
 })
-router.post("/api/v1/stations/*/announcements",(req,res)=>{
-    const {text} = req.body
-    console.log(text)
-    console.log("/api/v1/El-Shohadaa/announcements")
-    res.status(201).json({state:"ok"})
-})
-router.get("/api/v1/stations/*/announcements",async (req,res)=>{
+router.post("/api/v1/stations/:station/announcements", createAnnouncementController)
+router.get("/api/v1/stations/*/announcements",async (req,res,next)=>{
     const url = req.url
     const station = url.split("/")[4]
     console.log(station)
-    const announcements =await Announcement.find({station:station})
-    console.log(announcements)
-    Socket.to(station).emit("announcement",announcements)
-    res.status(200).json({announcements})
+    const stations = await Announcement.find({stationId:station}).sort({createdAt:-1})
+    res.status(200).json({station:stations})
 })
 
 // TODO: Announcements endpoints

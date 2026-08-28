@@ -1,26 +1,25 @@
 // TODO: Handle creating new announcement
-import { Socket } from "socket.io";
 import { getIo } from "../sockets/ioInstance.js";
-
+import Announcement from "../models/Announcement.js";
 
 export async function createAnnouncementController(req, res, next) {
   try {
-    const url = req.url
-    const station = url.split("/")[4]
-    const {announcement} = req.body
-    console.log(url,station,announcement)
-    if(announcement.text){console.log("text found in announcement")}
+    const { station } = req.params;
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ message: "Announcement text is required" });
+    }
+
     const createdAnnounce = await Announcement.create({
-      stationId,
-      text
-    })
-    const io = getIo();
-    console.log(io)
-    Socket.to("station").emit("announcement", {
-    text: "Train delayed",
-    station: 5
+      stationId: station,
+      text: text.trim(),
     });
-    res.status(200).json({createdAnnounce})
+
+    const io = getIo();
+    io.to(station).emit("announcement", createdAnnounce.toObject());
+
+    res.status(201).json({ createdAnnounce });
     // Get station ID from URL parameter
     // Get announcement text from request body
     // Check if text was provided

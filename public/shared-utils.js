@@ -169,7 +169,7 @@ export function addAnnouncementToList(
 export async function displayAnnouncements(announcementList, announcements) {
   announcementList.innerHTML = "";
   console.log(announcements)
-  announcements.announcements.forEach((a) =>
+  announcements.station.forEach((a) =>
     addAnnouncementToList(announcementList, a, false)
   );
 }
@@ -246,8 +246,9 @@ export function handleStationChange(
 export function setupSocketListeners(socket, announcementList, viewersText) {
   // When new announcement arrives via Socket.IO
   socket.on("announcement", (a) => {
-    // Only show if it's for the station we're watching
+    console.log("websocket:starting")
     if (a.stationId === appState.currentStationId) {
+      console.log("in websockets:success")
       addAnnouncementToList(announcementList, a, true);
     }
   });
