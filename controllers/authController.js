@@ -1,4 +1,6 @@
 // TODO: Handle login requests
+import jwt from "jsonwebtoken"
+
 export async function loginController(req, res, next) {
   try {
     const {email ,password} = req.body
