@@ -11,7 +11,6 @@ export async function createAnnouncementController(req, res, next) {
       return res.status(401).json({err:"invalid token"})
     }
     const token = header.split(" ")[1]
-    console.log(token)
     if (!text || !text.trim()) {
       return res.status(400).json({ message: "Announcement text is required" });
     }

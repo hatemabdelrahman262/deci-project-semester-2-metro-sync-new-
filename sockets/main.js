@@ -1,7 +1,20 @@
 // Import function to save socket.io instance
 import { setIo } from "./ioInstance.js";
 
-// TODO: Main function to set up all socket events
+function getViewerCount(io, stationId) {
+  const room = io.sockets.adapter.rooms.get(stationId);
+  return room ? room.size : 0;
+}
+
+function updatePresence(io, stationId) {
+  const watchers = getViewerCount(io, stationId);
+  io.to(stationId).emit("presenceUpdate", {
+    stationId,
+    watchers,
+  });
+  return watchers;
+}
+
 export default function setupSockets(io) {
   // Save io instance so other files can use it
   setIo(io);
@@ -10,28 +23,30 @@ export default function setupSockets(io) {
   io.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
 
-    // TODO: When user joins a station room
     socket.on("joinStation", (stationId) => {
-      console.log("station joined",stationId)
-      socket.join(stationId)
+      if (!stationId) return;
 
-      // Add this socket to the station room
-      // Count how many people are watching this station
-      // Tell everyone in the room how many watchers there are
+      socket.join(stationId);
+      console.log("station joined", stationId);
+      updatePresence(io, stationId);
     });
 
-    // TODO: When user leaves a station room
     socket.on("leaveStation", (stationId) => {
-      console.log(`${socket.id} left ${stationId}`)
-      socket.leave(stationId)
-      // Remove this socket from the station room
-      // Count remaining watchers
-      // Update everyone with new watcher count
+      if (!stationId) return;
+
+      socket.leave(stationId);
+      console.log(`${socket.id} left ${stationId}`);
+      updatePresence(io, stationId);
     });
 
-    // When socket disconnects (user closes browser/tab)
     socket.on("disconnect", () => {
       console.log("Socket disconnected:", socket.id);
+
+      for (const room of socket.rooms) {
+        if (room !== socket.id) {
+          updatePresence(io, room);
+        }
+      }
     });
   });
 }
