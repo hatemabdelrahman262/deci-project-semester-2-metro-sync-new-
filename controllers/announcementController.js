@@ -32,7 +32,7 @@ export async function createAnnouncementController(req, res, next) {
     // If socket.io is available, send announcement to all users watching this station
     // Send success response with the new announcement
   } catch (err) {
-    console.error(err)
-    next(err);
+    console.error(err);
+
   }
 }

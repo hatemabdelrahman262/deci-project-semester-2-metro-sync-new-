@@ -5,12 +5,14 @@ import jwt from "jsonwebtoken"
 import bcrypt  from "bcrypt"
 import Announcement from "../models/Announcement.js";
 import { createAnnouncementController } from "../controllers/announcementController.js";
+import { connectDB } from "../config/db.js";
 // Create router for station routes
 const router = express.Router();
 
 // TODO: Station CRUD endpoints
 // GET /api/v1/stations - Get all stations (anyone can access)
 router.get("/api/v1/stations",async (req,res)=>{
+    await connectDB();
     console.log("in")
     const stations =await  getAllStations()
     console.log("stations")
@@ -18,6 +20,7 @@ router.get("/api/v1/stations",async (req,res)=>{
 })
 router.post("/api/v1/stations/:station/announcements", createAnnouncementController)
 router.get("/api/v1/stations/*/announcements",async (req,res,next)=>{
+    await connectDB();
     const url = req.url
     const station = url.split("/")[4]
     console.log(station)
