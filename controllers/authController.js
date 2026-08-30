@@ -5,13 +5,13 @@ export async function loginController(req, res, next) {
   try {
     const {email ,password} = req.body
     if(!email || !password){
-
+      return res.status(400).json({Error:"email and password must be provided"})
     }
     const token =jwt.sign({
       role:"admin"
     },process.env.JWT_SECRET
     ,{expiresIn:"1d"})
-    res.status(200).json({token})
+    return res.status(200).json({token})
     // Get email and password from request body
     // Check if both fields are provided
     // Try to login with provided credentials

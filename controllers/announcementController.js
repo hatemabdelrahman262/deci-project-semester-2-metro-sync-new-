@@ -6,7 +6,12 @@ export async function createAnnouncementController(req, res, next) {
   try {
     const { station } = req.params;
     const { text } = req.body;
-
+    const header = req.headers.authorization;
+    if(!header){
+      return res.status(401).json({err:"invalid token"})
+    }
+    const token = header.split(" ")[1]
+    console.log(token)
     if (!text || !text.trim()) {
       return res.status(400).json({ message: "Announcement text is required" });
     }
@@ -28,7 +33,7 @@ export async function createAnnouncementController(req, res, next) {
     // If socket.io is available, send announcement to all users watching this station
     // Send success response with the new announcement
   } catch (err) {
-    // Pass any errors to error handler
+    console.error(err)
     next(err);
   }
 }

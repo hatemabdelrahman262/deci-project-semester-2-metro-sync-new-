@@ -8,7 +8,7 @@ dotenv.config();
 // Function to connect to MongoDB database
 export async function connectDB() {
   // Get MongoDB connection URL from environment variables
-  const url = process.env.MONGO_URL || "mongodb://localhost:27017/semester2project";
+  const url = process.env.MONGO_URL || MONGO_URL;
 
   // Check if URL exists, show error if missing
   if (!url) {
